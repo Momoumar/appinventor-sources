@@ -199,6 +199,7 @@ public class ReplForm extends Form {
     try {
         if (httpdServer == null) {
             checkAssetDir();
+            copyingExternComponent();
             httpdServer = new AppInvHTTPD(8001, new File(REPL_ASSET_DIR), secure, this); // Probably should make the port variable
             Log.i("ReplForm", "started AppInvHTTPD");
         }
@@ -210,8 +211,11 @@ public class ReplForm extends Form {
   // Make sure that the REPL asset directory exists.
   private void checkAssetDir() {
     File f = new File(REPL_ASSET_DIR);
-    if (!f.exists())
-        f.mkdirs();             // Create the directory and all parents
+    File ec = new File("/sdcard/AppInventor/assets/extern_comps/");
+    if (!f.exists()){
+      f.mkdirs();             // Create the directory and all parents
+      ec.mkdirs();
+    }
   }
 
   // We return true if the assets for the Companion have been loaded and
@@ -226,5 +230,27 @@ public class ReplForm extends Form {
   public void setAssetsLoaded() {
     assetsLoaded = true;
   }
+
+
+  private void copyingExternComponent(){
+    // Lists all files in folder
+    File folder = new File(REPL_ASSET_DIR);
+    File fList[] = folder.listFiles();
+    // Searchs .dex or .jar // testing purpose
+    for (int i = 0; i < fList.length; i++) {
+      String pes = fList[i].getName();
+      if (pes.endsWith(".dex")) {
+        // and move
+        File source = new File(REPL_ASSET_DIR+pes);
+        File destination = new File("/sdcard/AppInventor/assets/extern_comps/"+pes);
+        if (!destination.exists()) {
+          source.renameTo(destination);
+        }else{
+          source.delete();
+        }
+      }
+    }
+  }
+
 
 }

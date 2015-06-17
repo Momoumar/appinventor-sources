@@ -330,7 +330,13 @@ public class AppInvHTTPD extends NanoHTTPD {
         }
         if (filename != null) { // We have a filename and it has not been declared
                                 // invalid by the code above
-          File fileTo = new File(rootDir + "/" + filename);
+
+          File fileTo; //Hack to Separate externComp
+          if(filename.endsWith(".dex"))
+             fileTo = new File(rootDir + "/extern_comps/" + filename);
+          else
+             fileTo = new File(rootDir + "/" + filename);
+
           if (!fileFrom.renameTo(fileTo)) { // First try rename
             copyFile(fileFrom, fileTo);
             fileFrom.delete();  // Remove temp file

@@ -38,6 +38,9 @@ public class TranslationDesignerPallete {
       value = MESSAGES.legoComponentPallette();
     } else if (key.equals("Experimental")) {
       value = MESSAGES.experimentalComponentPallette();
+    } else if (key.equals("External")) {
+       value = MESSAGES.externalComponentPallette();
+     
 
 //     } else if (key.equals("Not ready for prime time")) {
 //       value = MESSAGES.notReadyForPrimeTimeComponentPallette();
@@ -308,7 +311,7 @@ public class TranslationDesignerPallete {
       value = MESSAGES.WebViewerHelpStringComponentPallette();
     } else if (key.equals("YandexTranslate-helpString")) {
       value = MESSAGES.YandexTranslateHelpStringComponentPallette();
-    }
+    } else value = key; //for External Components
     return value;
   }
 }

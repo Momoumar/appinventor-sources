@@ -122,7 +122,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    */
   @Override
   public void loadComponents(DropTargetProvider dropTargetProvider) {
-    
+
     String extraComponent = "[{ \"name\": \"MysteryComponent\","
   +"\"version\": \"1\","
   +"\"package\": \"com.google.appinventor.components.runtime\","
@@ -137,8 +137,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   +"\"events\": [{ \"name\": \"AfterPicture\", \"description\": \"Indicates that a photo was taken with the camera and provides the path to\\n the stored picture.\", \"deprecated\": \"false\", \"params\": [{ \"name\": \"image\", \"type\": \"text\"}]}"
   +"],"
   +"\"methods\": [{ \"name\": \"TakePicture\", \"description\": \"Takes a picture, then raises the AfterPicture event.\\n If useFront is true, adds an extra to the intent that requests the front-facing camera.\", \"deprecated\": \"false\", \"params\": []}]}]";
-    
-        
+
+
     COMPONENT_DATABASE.addComponents(new ClientJsonParser().parse(extraComponent).asArray());
     for (String component : COMPONENT_DATABASE.getComponentNames()) {
       String categoryString = COMPONENT_DATABASE.getCategoryString(component);

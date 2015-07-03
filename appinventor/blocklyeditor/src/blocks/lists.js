@@ -73,6 +73,20 @@ Blockly.Blocks['lists_create_with_item'] = {
 };
 
 
+Blockly.Blocks['lists_create_with_itemMos'] = {
+  // Add items.
+  init: function() {
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_LISTS_CREATE_WITH_ITEM_TITLE);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP);
+    this.contextMenu = false;
+  }
+};
+
+
 Blockly.Blocks['lists_add_items'] = {
   // Create a list with any number of elements of any type.
   category: 'Lists',

@@ -19,9 +19,10 @@
 ;;;
 
 ;;; also see *debug-form* below
-(define *debug* #f)
+(define *debug* #t)
 
 (define *this-is-the-repl* #f)
+(define-alias ReplFormMos <com.google.appinventor.components.runtime.ReplForm>)
 
 (define (android-log message)
   (when *debug* (android.util.Log:i "YAIL" message)))
@@ -50,7 +51,7 @@
   ;; call it with an init-property lambda rather than just an init-property form
   (syntax-rules ()
     ((_ container component-type component-name)
-     (begin
+     (begin 
        (define component-name :: (gen-simple-component-type component-type) #!null)
        (if *this-is-the-repl*
            (add-component-within-repl 'container
@@ -84,22 +85,38 @@
 ;; sent from the the blocks editor
 
 (define (add-component-within-repl container-name component-type component-name init-props-thunk)
+  (android-log (format #f "Mos ** is Adding ~A of type ~A  " component-name component-type))
+  ;(if (string=? component-type "com.google.appinventor.components.runtime.MysteryComp")(set! component-type "com.google.appinventor.components.runtime.Button"))  
   (define-alias SimpleContainer <com.google.appinventor.components.runtime.ComponentContainer>)
   (define-alias SimplePropertyUtil <com.google.appinventor.components.runtime.util.PropertyUtil>)
   (let* ((container :: SimpleContainer (lookup-in-current-form-environment container-name))
          (existing-component (lookup-in-current-form-environment component-name))
-         (component-to-add (make component-type container)))
+         ;(component-to-add (ReplFormMos:loadAndInstantiate  component-type container))
+         (component-to-add (if (string=? component-type "com.google.appinventor.components.runtime.Camera")
+            (begin (ReplFormMos:loadAndInstantiate  "com.google.appinventor.components.runtime.MysteryComp" container))
+            (begin (ReplFormMos:loadAndInstantiate  component-type container))  
+            ;(begin (make component-type container))   
+          )
+         )
+         )
     (add-to-current-form-environment component-name component-to-add)
     (add-init-thunk component-name
      (lambda ()
        (when init-props-thunk (init-props-thunk))
        (when existing-component
          (android-log (format #f "Copying component properties for ~A" component-name))
-         (SimplePropertyUtil:copyComponentProperties existing-component component-to-add))))))
+         (SimplePropertyUtil:copyComponentProperties existing-component component-to-add))
+       )
+     )
+    )
+
+  )
 
 (define-alias SimpleForm <com.google.appinventor.components.runtime.Form>)
 
 (define (call-Initialize-of-components . component-names)
+  (android-log (format #f "Calling call-Initialize-of-components  for ~A" component-names))
+  ;I/YAIL    (20234): Calling call-Initialize-of-components  for (Screen1 Button1 NxtDirectCommands1 ExternComp1)
   ;; Do any inherent/implied initializations
   (for-each (lambda (component-name)
               (let ((init-thunk (get-init-thunk component-name)))
@@ -114,13 +131,17 @@
 (define *init-thunk-environment* (gnu.mapping.Environment:make 'init-thunk-environment))
 
 (define (add-init-thunk component-name thunk)
-  (gnu.mapping.Environment:put *init-thunk-environment* component-name thunk))
+  (android-log (format #f "Calling add-init-thunk  for  component-name ~A and thunk ~A " component-name thunk))
+  (gnu.mapping.Environment:put *init-thunk-environment* component-name thunk)
+)
 
 (define (get-init-thunk component-name)
+   (android-log (format #f "Calling get-init-thunk  for ~A" component-name))
   (and (gnu.mapping.Environment:isBound *init-thunk-environment* component-name)
        (gnu.mapping.Environment:get *init-thunk-environment* component-name)))
 
 (define (clear-init-thunks)
+  (android-log (format #f "Calling clear-init-thunks"))
   (set! *init-thunk-environment* (gnu.mapping.Environment:make 'init-thunk-environment)))
 
 ;;; (get-component comp1)
@@ -295,7 +316,7 @@
        (module-static form-name)
        (require <com.google.youngandroid.runtime>)
 
-       (define *debug-form* #f)
+       (define *debug-form* #t)
 
        (define (android-log-form message)
          (when *debug-form* (android.util.Log:i "YAIL" message)))
@@ -468,14 +489,21 @@
          ;; Create each component and set its corresponding field
          (define (init-components component-descriptors)
            (for-each (lambda (component-info)
+                       ;(if (string=? component-type "com.google.appinventor.components.runtime.TextBox")(set! component-type "com.google.appinventor.components.runtime.Button"))  
                        (let ((component-name (caddr component-info))
                              (init-thunk (cadddr component-info))
                              (component-type (cadr component-info))
                              (component-container (lookup-in-form-environment (car component-info))))
-                         ;; (android-log-form
-                         ;;  (format #f "making component: ~A of type: ~A with container: ~A (container-name: ~A)"
-                         ;;          component-name component-type component-container (car component-info)))
-                         (let ((component-object (make component-type component-container)))
+                          (android-log-form
+                          (format #f "Mos*** making component: ~A of type: ~A with container: ~A (container-name: ~A)"
+                                 component-name component-type component-container (car component-info)))
+                         (let ((component-object 
+                                (if (string=? component-type "com.google.appinventor.components.runtime.MysteryComp")
+                                 (begin (make "com.google.appinventor.components.runtime.Button" component-container))
+                                 (begin (make component-type component-container))
+                                )
+                              )
+                              )
                            ;; Construct the component and assign it to its corresponding field
                            (set! (field (this) component-name) component-object)
                            ;; Add the mapping from component name -> component object to the
@@ -693,8 +721,8 @@
       (gnu.mapping.Environment:put *test-environment* name object)))
 
 (define (lookup-in-current-form-environment name :: gnu.mapping.Symbol #!optional (default-value #f))
-                    ;  (android-log (format #f "Looking up ~A in env ~A" name
-                    ;                                     (if (not (eq? *this-form* #!null)) (*:.form-environment *this-form*) 'null)))
+                      (android-log (format #f "Looking up ~A in env ~A" name
+                                                         (if (not (eq? *this-form* #!null)) (*:.form-environment *this-form*) 'null)))
   (let ((env (if (not (eq? *this-form* #!null))
                  (*:.form-environment *this-form*)
                  ;; The following is just for testing. In normal situations *this-form* should be non-null
@@ -1550,11 +1578,105 @@
             " as the number of decimal places.  This number must be a non-negative integer.")
            (string-append "Bad number of decimal places for format as decimal")))))
 
+
+;;; We need to explicitly return #t or #f because the value
+;;; gets passed to a receiving block.
 (define (is-number? arg)
   (if (or (number? arg)
           (and (string? arg) (padded-string->number arg)))
       #t
       #f))
+
+
+
+;;; We can call the patterrn matcher here, becuase the blocks declare the arg type to
+;;; be text and therefore the arg will be a string when the procedure is called.
+
+(define (is-base10? arg)
+  (and (Pattern:matches "[0123456789]*" arg) (not (string-empty? arg))))
+
+(define (is-hexadecimal? arg)
+  (and (Pattern:matches "[0-9a-fA-F]*" arg) (not (string-empty? arg))))
+
+(define (is-binary? arg)
+  (and (Pattern:matches "[01]*" arg) (not (string-empty? arg))))
+
+;;; Math-convert procedures do not need their arg explicitly sanitized because
+;;; the blocks delare the arg type as string
+
+(define (math-convert-dec-hex x)
+  (if (is-base10? x)
+    (string-to-upper-case (number->string (string->number x) 16))
+    (signal-runtime-error
+      (format #f "Convert base 10 to hex: '~A' is not a positive integer"
+       (get-display-representation x)
+      )
+      "Argument is not a positive integer"
+    )
+  )
+)
+
+(define (math-convert-hex-dec x)
+  (if (is-hexadecimal? x)
+    (string->number (string-to-upper-case x) 16)
+    (signal-runtime-error
+      (format #f "Convert hex to base 10: '~A' is not a hexadecimal number"
+       (get-display-representation x)
+      )
+      "Invalid hexadecimal number"
+    )
+  )
+)
+
+(define (math-convert-bin-dec x)
+  (if (is-binary? x)
+    (string->number x 2)
+    (signal-runtime-error
+      (format #f "Convert binary to base 10: '~A' is not a  binary number"
+       (get-display-representation x)
+      )
+      "Invalid binary number"
+    )
+  )
+)
+
+(define (math-convert-dec-bin x)
+  (if (is-base10? x)
+    (patched-number->string-binary (string->number x))
+    (signal-runtime-error
+      (format #f "Convert base 10 to binary: '~A' is not a positive integer"
+       (get-display-representation x)
+      )
+      "Argument is not a positive integer"
+    )
+  )
+)
+
+;;; Kawa number->string has a bug where converting large numbers to binary
+;;; produces zero-divides errors.  We canPatch around this by
+;;; doing the conversion in Scheme when the numbers are large.
+;;; Some day we might fix kawa and then we can get rid of this patch.
+(define (patched-number->string-binary x)
+  (if (< (abs x) 1.e18)
+      (number->string x 2)
+      (alternate-number->string-binary x)))
+
+
+(define (alternate-number->string-binary x)
+  ;; ensure the arg is a positive integer
+  (let* ((clean-x (floor (abs x)))
+         (converted-clean-x (internal-binary-convert clean-x)))
+    (if (>= clean-x 0)
+        converted-clean-x
+        (string-append "-" converted-clean-x))))
+
+(define (internal-binary-convert x)
+  (cond ((= x 0) "0")
+        ((= x 1) "1")
+        (else
+            (string-append (internal-binary-convert (quotient x 2))
+                           (internal-binary-convert (remainder x 2))))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of Math implementation

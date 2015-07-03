@@ -2023,7 +2023,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("LEGO\u00AE MINDSTORMS\u00AE")
   @Description("")
   String legoComponentPallette();
-  
+
   @DefaultMessage("External")
   @Description("")
   String externalComponentPallette();
@@ -4085,6 +4085,11 @@ public interface OdeMessages extends Messages {
   String ShakingEvents();
 
   //Methods
+
+  @DefaultMessage("Execute")
+  @Description("Execute a given Method")
+  String  ExecuteMethods();
+
   @DefaultMessage("ResolveActivity")
   @Description("")
   String ResolveActivityMethods();

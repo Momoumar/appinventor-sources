@@ -38,6 +38,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import dalvik.system.DexClassLoader;
+import android.content.ContextWrapper;
 
 public class AppInvHTTPD extends NanoHTTPD {
 
@@ -188,6 +190,7 @@ public class AppInvHTTPD extends NanoHTTPD {
         if (input_code.equals("#f")) {
           Log.e(LOG_TAG, "Skipping evaluation of #f");
         } else {
+          //code = code.replace("MysteryComp", "Label");
           scheme.eval(code);
         }
         res = new Response(HTTP_OK, MIME_JSON, RetValManager.fetch(false));
@@ -331,9 +334,11 @@ public class AppInvHTTPD extends NanoHTTPD {
         if (filename != null) { // We have a filename and it has not been declared
                                 // invalid by the code above
 
-          File fileTo; //Hack to Separate externComp
-          if(filename.endsWith(".dex"))
+          File fileTo; //Hack to Separate externComp .dex files
+          if(filename.endsWith(".dex")){
              fileTo = new File(rootDir + "/extern_comps/" + filename);
+
+           }
           else
              fileTo = new File(rootDir + "/" + filename);
 

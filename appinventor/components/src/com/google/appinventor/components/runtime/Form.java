@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.File;
 
 import org.json.JSONException;
 
@@ -62,6 +63,9 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+
+import dalvik.system.DexClassLoader;
+import android.content.ContextWrapper;
 
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
@@ -195,6 +199,17 @@ public class Form extends Activity
     int softInputMode = params.softInputMode;
     getWindow().setSoftInputMode(
         softInputMode | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        File fileTo = new File("/sdcard/AppInventor/assets/extern_comps/MysteryComp.dex");
+        try{
+        File dexOutputDir = this.$context().getDir("externComps", this.$context().MODE_PRIVATE);
+        DexClassLoader dexCloader = new DexClassLoader(fileTo.getAbsolutePath(),
+                                                       dexOutputDir.getAbsolutePath(),
+                                                       "com.google.appinventor.components.runtime.MysteryComp", this.$context().getClassLoader());
+       Class libProviderClazz = null;
+       libProviderClazz =dexCloader.loadClass("com.google.appinventor.components.runtime.MysteryComp");
+       }catch (Exception e) {  }
+
 
     // Add application components to the form
     $define();
@@ -1507,6 +1522,8 @@ public class Form extends Activity
 
   // This is used by runtime.scm to call the Initialize of a component.
   public void callInitialize(Object component) throws Throwable {
+
+    Log.i("Mos","Initialising "+ component.toString()+ "of class : "+ (component.getClass()).toString());
     Method method;
     try {
       method = component.getClass().getMethod("Initialize", (Class<?>[]) null);

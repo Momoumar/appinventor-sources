@@ -34,6 +34,16 @@ import android.app.PendingIntent;
 import android.app.Activity;
 import android.content.Context;
 
+
+import java.util.*;
+import dalvik.system.DexClassLoader;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.reflect.InvocationTargetException;
 /**
  * Subclass of Form used by the 'stem cell apk', i.e. the Android app that allows communication
  * via the Repl
@@ -229,6 +239,36 @@ public class ReplForm extends Form {
 
   public void setAssetsLoaded() {
     assetsLoaded = true;
+  }
+
+
+  /**
+   * Load and create an instance of a given component type.
+   *
+   * @param componentType The full path of the component Ex :"com.google.appinventor.components.runtime.Label"
+   * @param container The Form that this component is contained in.
+   */
+
+  public static Object loadAndInstantiate(String componentType,ComponentContainer container) {
+
+    Object instanceLoadedClass = null;
+    try {
+
+      File dexInternalStoragePath = new File("/sdcard/AppInventor/assets/extern_comps/MysteryComp.dex");
+
+      DexClassLoader cl = new DexClassLoader(dexInternalStoragePath.getAbsolutePath(),
+                                              topform.$context().getCacheDir().getAbsolutePath(),
+                                              null, topform.$context().getClassLoader()
+                                              );
+
+      Class<?> loadedClass = cl.loadClass(componentType);
+      instanceLoadedClass = loadedClass.getConstructor(ComponentContainer.class).newInstance(container);
+      Log.i("Mos","loadAndInstantiateCorrect "+ loadedClass.toString());
+    }catch (Exception exception){
+      Log.i("Mos","loadAndInstantiate "+  exception.getMessage());
+    }
+
+    return instanceLoadedClass;
   }
 
 

@@ -123,7 +123,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   @Override
   public void loadComponents(DropTargetProvider dropTargetProvider) {
 
-    String extraComponent = "[{ \"name\": \"MysteryComponent\","
+    String extraComponent = "[{ \"name\": \"MysteryComp\","
   +"\"version\": \"1\","
   +"\"package\": \"com.google.appinventor.components.runtime\","
   +"\"external\": \"true\","

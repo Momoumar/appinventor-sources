@@ -11,6 +11,8 @@ import com.google.appinventor.components.runtime.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import android.util.Log;
+
 
 /**
  * Utilities for copying properties between different instances of the same component.
@@ -28,6 +30,8 @@ public class PropertyUtil {
    */
   public static Component copyComponentProperties(Component source, Component target)
       throws Throwable {
+
+    Log.i("Mos", "Calling ** copyComponentProperties source"+source.toString()+"target"+target.toString());
     if (!source.getClass().equals(target.getClass())) {
       throw new IllegalArgumentException("Source and target classes must be identical");
     }

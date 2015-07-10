@@ -113,6 +113,7 @@
     <ai.javac5 destdir="${AndroidRuntime-class.dir}">
       <include name="${components.pkg}/annotations/*.java" />
       <include name="${components.pkg}/runtime/**/*.java" />
+      <include name="${components.pkg}/extern/*.java" />
       <classpath>
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
@@ -213,6 +214,7 @@
              srcdir="${src.dir}"
              includeantruntime="false">
         <include name="${components.pkg}/runtime/*.java" />
+        <include name="${components.pkg}/extern/*.java" />
         <classpath>
           <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
           <pathelement location="${local.build.dir}/HtmlEntities.jar" />

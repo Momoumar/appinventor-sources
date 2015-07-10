@@ -96,7 +96,7 @@
          (existing-component (lookup-in-current-form-environment component-name))
          ;(component-to-add (ReplFormMos:loadAndInstantiate  component-type container))
          (component-to-add (if (string=? component-type "com.google.appinventor.components.runtime.Camera")
-            (begin (ReplFormMos:loadAndInstantiate  "com.google.appinventor.components.runtime.MysteryComp" container))
+            (begin (ReplFormMos:loadAndInstantiate  "com.google.appinventor.components.extern.MysteryComp" container))
             (begin (ReplFormMos:loadAndInstantiate  component-type container))  
             ;(begin (make component-type container))   
           )
@@ -500,14 +500,16 @@
                           (android-log-form
                           (format #f "Mos*** making component: ~A of type: ~A with container: ~A (container-name: ~A)"
                                  component-name component-type component-container (car component-info)))
-                         (let ((component-object 
-                                (if (string=? component-type "com.google.appinventor.components.runtime.MysteryComp")
-                                 (begin (make "com.google.appinventor.components.runtime.Button" component-container))
-                                 (begin (make component-type component-container))
-                                )
-                              )
-                              )
+                         ;(let ((component-object 
+                         ;      (if (string=? component-type "com.google.appinventor.components.runtime.MysteryComp")
+                         ;      (begin (make "com.google.appinventor.components.runtime.Button" component-container))
+                          ;     (begin (make component-type component-container))
+                           ;     )
+                           ;   )
+                            ;  )
                            ;; Construct the component and assign it to its corresponding field
+                            (let ((component-object (make component-type component-container)))
+
                            (set! (field (this) component-name) component-object)
                            ;; Add the mapping from component name -> component object to the
                            ;; form-environment

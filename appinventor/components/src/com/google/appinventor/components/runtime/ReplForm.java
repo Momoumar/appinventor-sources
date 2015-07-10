@@ -255,9 +255,9 @@ public class ReplForm extends Form {
     try {
 
       File dexInternalStoragePath = new File("/sdcard/AppInventor/assets/extern_comps/MysteryComp.dex");
-
+      File dexOutput = topform.$context().getDir("externComps", topform.$context().MODE_PRIVATE);
       DexClassLoader cl = new DexClassLoader(dexInternalStoragePath.getAbsolutePath(),
-                                              topform.$context().getCacheDir().getAbsolutePath(),
+                                              dexOutput.getAbsolutePath(),
                                               null, topform.$context().getClassLoader()
                                               );
 
